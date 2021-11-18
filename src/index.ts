@@ -1,13 +1,4 @@
-import express from 'express';
-import { config } from './config';
+import Server from './models/server';
 
-const app = express();
-const port = config.port;
-
-app.get('/', (_req, res) => {
-	res.send('The sedulous hyena ate the antelope!');
-});
-
-app.listen(port, () => {
-	return console.log(`server is listening on ${port}`);
-});
+const server = new Server();
+server.listen();

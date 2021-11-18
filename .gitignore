@@ -25,6 +25,7 @@ jspm_packages/
 
 # generate output
 dist
+build
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
