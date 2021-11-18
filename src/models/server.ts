@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import { config } from '../config';
 import zoneRoutes from '../routes/zone';
+import equipmentRoutes from '../routes/equipment.route';
 import db from '../db/connection';
 import cors from 'cors';
 
@@ -9,6 +10,7 @@ class Server {
 	private port: string | number;
 	private apiPaths = {
 		zones: '/api/zones',
+		equipments: '/api/equipments',
 	};
 
 	constructor() {
@@ -43,6 +45,7 @@ class Server {
 
 	routes() {
 		this.app.use(this.apiPaths.zones, zoneRoutes);
+		this.app.use(this.apiPaths.equipments, equipmentRoutes);
 	}
 
 	listen() {

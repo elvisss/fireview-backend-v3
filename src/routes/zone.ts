@@ -5,7 +5,7 @@ import {
 	postZone,
 	putZone,
 	deleteZone,
-} from '../controllers/zone';
+} from '../controllers/zone.controller';
 
 const router = Router();
 

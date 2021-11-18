@@ -1,12 +1,15 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
 
-const Zone = db.define('Zone', {
-	idzone: {
+const Tag = db.define('Tag', {
+	idtag: {
 		type: DataTypes.INTEGER,
 		primaryKey: true
 	},
-	title: {
+    equipment_idequipment: {
+        type: DataTypes.INTEGER,
+    },
+	tagName: {
 		type: DataTypes.STRING,
 	},
 	description: {
@@ -17,4 +20,4 @@ const Zone = db.define('Zone', {
 	timestamps: false
 });
 
-export default Zone;
+export default Tag;

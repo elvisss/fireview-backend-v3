@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import Zone from '../models/zone';
+import { Zone } from '../db/associations';
 
 export const getZones = async (_req: Request, res: Response) => {
 	try {
-		const zones = await Zone.findAll();
+		const zones = await Zone.findAll({ include: ['equipments'] });
 		res.json(zones);
 	} catch (error: any) {
 		console.log({ error });
