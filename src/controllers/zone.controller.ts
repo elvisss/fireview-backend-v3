@@ -16,7 +16,7 @@ export const getZones = async (_req: Request, res: Response) => {
 export const getZone = async (req: Request, res: Response) => {
 	const { id } = req.params;
 
-	const zone = await Zone.findByPk(id);
+	const zone = await Zone.findByPk(id, { include: ['equipments'] });
 
 	if (zone) {
 		res.json(zone);

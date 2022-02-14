@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
-import Tag from './tag.model';
 import Zone from './zone.model';
 
 const Equipment = db.define('Equipment', {
@@ -33,6 +32,20 @@ const Equipment = db.define('Equipment', {
 	},
 	equipmentPosition: {
 		type: DataTypes.STRING,
+	},
+	latitude: {
+		type: DataTypes.DECIMAL(8,6),
+	},
+	longitude: {
+		type: DataTypes.DECIMAL(9,6),
+	},
+	value: {
+		type: DataTypes.BOOLEAN,
+		defaultValue: true,
+	},
+	Acknowledge: {
+		type: DataTypes.BOOLEAN,
+		defaultValue: false,
 	},
 }, {
 	freezeTableName: true,
