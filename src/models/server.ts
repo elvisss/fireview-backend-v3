@@ -1,15 +1,19 @@
+import MySQLEvents from '@rodrigogs/mysql-events';
 import express, { Application } from 'express';
+import mysql from 'mysql';
+import cors from 'cors';
 import http from 'http';
+import Websocket from './websocket';
 import socketIO from 'socket.io';
 import { config } from '../config';
-import zoneRoutes from '../routes/zone';
+import zoneRoutes from '../routes/zone.route';
 import equipmentRoutes from '../routes/equipment.route';
 import db from '../db/connection';
-import cors from 'cors';
 
 class Server {
 	private app: Application;
 	private httpServer: http.Server;
+	private io: socketIO.Server;
 	private port: string | number;
 	private apiPaths = {
 		zones: '/api/zones',
@@ -18,43 +22,63 @@ class Server {
 
 	constructor() {
 		this.app = express();
-		this.httpServer = http.createServer(this.app);
 		this.port = config.port;
+		this.httpServer = http.createServer(this.app);
+		this.io = Websocket.getInstance(this.httpServer);
 
 		// Métodos iniciales
-		this.dbConnection();
 		this.webSockets();
+		this.dbConnection();
 		this.middlewares();
 		this.routes();
+	}
+
+	async webSockets() {
+		try {
+			this.io.on("connection", (socket) => {
+				socket.on('disconnect', () => {
+					console.log('user disconnected');
+				});
+				socket.emit('name', 'Elvis');
+			});
+		}
+		catch (error: any) {
+			console.log({ error });
+			throw new Error(error);
+		}
 	}
 
 	async dbConnection() {
 		try {
 			await db.authenticate();
-			console.log('Database online');
-		} catch (error: any) {
-			console.log('dbConnection');
-			throw new Error(error);
-		}
-	}
+			const connection = mysql.createConnection({
+				database: 'mydb',
+				host: 'localhost',
+				port: 3306,
+				user: 'root',
+				password: 'Admin123!',
+			});
 
-	async webSockets() {
-		try {
-			const io = new socketIO.Server(this.httpServer, {
-				cors: {
-					origin: "http://localhost:8080",
-					methods: ["GET", "POST"]
+			const instance = new MySQLEvents(connection, {
+				startAtEnd: true // to record only the new binary logs, if set to false or you didn'y provide it all the events will be console.logged after you start the app
+			});
+
+			await instance.start();
+
+			instance.addTrigger({
+				name: 'monitoring all statments',
+				expression: '*',
+				statement: MySQLEvents.STATEMENTS.ALL,
+				onEvent: (e: any) => {
+					const io = Websocket.getInstance();
+					io.emit('test', e);
 				}
 			});
-			io.on("connection", (socket) => {
-				socket.on('disconnect', () => {
-					console.log('user disconnected');
-				});
 
-				socket.emit('name', 'Elvis');
-			});
-		}
-		catch (error: any) {
+			instance.on(MySQLEvents.EVENTS.CONNECTION_ERROR, console.error);
+			instance.on(MySQLEvents.EVENTS.ZONGJI_ERROR, console.error);
+		} catch (error: any) {
+			console.log('error dbConection', error);
 			throw new Error(error);
 		}
 	}

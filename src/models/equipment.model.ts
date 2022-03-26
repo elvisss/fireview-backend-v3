@@ -21,29 +21,20 @@ const Equipment = db.define('Equipment', {
 	description: {
 		type: DataTypes.STRING,
 	},
-	type: {
-		type: DataTypes.STRING,
-	},
 	axisX: {
-		type: DataTypes.DECIMAL,
+		type: DataTypes.DECIMAL(9,6),
 	},
 	axisY: {
-		type: DataTypes.DECIMAL,
+		type: DataTypes.DECIMAL(9,6),
 	},
 	equipmentPosition: {
 		type: DataTypes.STRING,
-	},
-	latitude: {
-		type: DataTypes.DECIMAL(8,6),
-	},
-	longitude: {
-		type: DataTypes.DECIMAL(9,6),
 	},
 	value: {
 		type: DataTypes.BOOLEAN,
 		defaultValue: true,
 	},
-	Acknowledge: {
+	acknowledge: {
 		type: DataTypes.BOOLEAN,
 		defaultValue: false,
 	},
