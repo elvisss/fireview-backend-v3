@@ -21,12 +21,14 @@ const Zone = db.define('Zone', {
 	longitude: {
 		type: DataTypes.DECIMAL(9,6),
 	},
-	axisX: {
-		type: DataTypes.DECIMAL(9,6),
+	value: {
+		type: DataTypes.BOOLEAN,
+		defaultValue: false,
 	},
-	axisY: {
-		type: DataTypes.DECIMAL(9,6),
-	},
+	data_sensor: {
+		type: DataTypes.DECIMAL(4,2),
+		defaultValue: 0,
+	}
 }, {
 	freezeTableName: true,
 	timestamps: false,

@@ -1,6 +1,5 @@
 import MySQLEvents from '@rodrigogs/mysql-events';
 import express, { Application } from 'express';
-import mysql from 'mysql';
 import cors from 'cors';
 import http from 'http';
 import Websocket from './websocket';
@@ -9,6 +8,8 @@ import { config } from '../config';
 import zoneRoutes from '../routes/zone.route';
 import equipmentRoutes from '../routes/equipment.route';
 import db from '../db/connection';
+import * as socket from '../sockets/socket';
+import Marker from './marker.model';
 
 class Server {
 	private app: Application;
@@ -27,40 +28,31 @@ class Server {
 		this.io = Websocket.getInstance(this.httpServer);
 
 		// Métodos iniciales
-		this.webSockets();
+		this.listenSockets();
 		this.dbConnection();
 		this.middlewares();
 		this.routes();
 	}
 
-	async webSockets() {
-		try {
-			this.io.on("connection", (socket) => {
-				socket.on('disconnect', () => {
-					console.log('user disconnected');
-				});
-				socket.emit('name', 'Elvis');
-			});
-		}
-		catch (error: any) {
-			console.log({ error });
-			throw new Error(error);
-		}
+	private listenSockets() {
+		this.io.on('connection', (client) => {
+			socket.googleMapSockets(client);
+		});
 	}
 
 	async dbConnection() {
 		try {
 			await db.authenticate();
-			const connection = mysql.createConnection({
-				database: 'mydb',
-				host: 'localhost',
+
+			const dsn = {
+				host: '127.0.0.1',
 				port: 3306,
 				user: 'root',
-				password: 'Admin123!',
-			});
+				password: 'root',
+			}
 
-			const instance = new MySQLEvents(connection, {
-				startAtEnd: true // to record only the new binary logs, if set to false or you didn'y provide it all the events will be console.logged after you start the app
+			const instance = new MySQLEvents(dsn, {
+				startAtEnd: true
 			});
 
 			await instance.start();
@@ -71,7 +63,17 @@ class Server {
 				statement: MySQLEvents.STATEMENTS.ALL,
 				onEvent: (e: any) => {
 					const io = Websocket.getInstance();
-					io.emit('test', e);
+					const zoneUpdated = e.affectedRows[0].after;
+					const marker: Marker = {
+						id: String(zoneUpdated.id),
+						name: zoneUpdated.title,
+						lat: zoneUpdated.latitude,
+						lng: zoneUpdated.longitude,
+						value: zoneUpdated.value,
+						data_sensor: zoneUpdated.data_sensor
+					}
+					/* console.log(marker); */
+					io.emit('marker-update', marker);
 				}
 			});
 
@@ -89,7 +91,7 @@ class Server {
 		// Lectura del body
 		this.app.use(express.json());
 		// parse application/x-www-form-urlencoded
-		this.app.use(express.urlencoded());
+		this.app.use(express.urlencoded({ extended: true }));
 		// Carpeta pública
 		this.app.use(express.static('public'));
 	}
