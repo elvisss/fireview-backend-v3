@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import db from '../db/connection';
 
-const Zone = db.define('Zone', {
+const Zone = db.define('zone', {
 	id: {
 		type: DataTypes.INTEGER,
 		primaryKey: true

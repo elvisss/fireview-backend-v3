@@ -22,6 +22,7 @@ jspm_packages/
 # dotenv environment variables file
 .env
 .env.test
+.env.production
 
 # generate output
 dist

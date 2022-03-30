@@ -45,10 +45,10 @@ class Server {
 			await db.authenticate();
 
 			const dsn = {
-				host: '127.0.0.1',
-				port: 3306,
-				user: 'root',
-				password: 'root',
+				host: config.dbHost,
+				port: config.dbPort,
+				user: config.dbUser,
+				password: config.dbPassword,
 			}
 
 			const instance = new MySQLEvents(dsn, {

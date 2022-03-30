@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import db from '../db/connection';
 import Zone from './zone.model';
 
-const Equipment = db.define('Equipment', {
+const Equipment = db.define('equipment', {
 	id: {
 		type: DataTypes.INTEGER.UNSIGNED,
 		autoIncrement: true,
