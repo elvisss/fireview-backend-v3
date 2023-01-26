@@ -2,7 +2,7 @@
   "name": "fireview-backend-v3",
   "version": "3.0.0",
   "engines": {
-    "node": "14.17.6"
+    "node": "16"
   },
   "description": "Real Time backend using Express framework",
   "main": "src/index.js",
